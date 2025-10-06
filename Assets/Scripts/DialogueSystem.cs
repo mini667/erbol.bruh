@@ -71,7 +71,7 @@ public class UniversalDialogueSystem2D : MonoBehaviour
     }
 
     // ==== Основная логика ====
-    void StartDialogue()
+    public void StartDialogue()
     {
         dialogueActive = true;
         pressKPanel?.SetActive(false);

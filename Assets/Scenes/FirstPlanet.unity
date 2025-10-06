@@ -22079,6 +22079,67 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 403080d7568a4f949b4bfc7128477a8c, type: 3}
+--- !u!1 &1232480649
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1232480651}
+  - component: {fileID: 1232480650}
+  m_Layer: 0
+  m_Name: NPC2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1232480650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1232480649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45c1395a88d56a4fb83625f5c2734ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  npcName: "\u0421\u0442\u0430\u0442\u0443\u044F"
+  npcSprite: {fileID: 21300114, guid: 29c9cded5e558164aaf8c9bf08aa1510, type: 3}
+  dialogueLines:
+  - isPlayerTalking: 0
+    sentence: "\u041F\u0443\u0442\u043D\u0438\u043A, \u0441\u0438\u043B\u044B \u0445\u0440\u0430\u043D\u0438\u0442\u0435\u043B\u044F
+      \u0438\u0441\u0441\u044F\u043A\u043B\u0438 \u0438 \u044F \u043D\u0435 \u0441\u043C\u043E\u0433\u0443
+      \u0442\u0435\u0431\u0435 \u043F\u043E\u043C\u043E\u0447\u044C \u043F\u043E\u043A\u0430
+      \u0442\u044B \u043D\u0435 \u043F\u0440\u0438\u043D\u0435\u0441\u0435\u0448\u044C
+      \u0435\u0433\u043E \u0441\u0435\u0440\u0434\u0446\u0435, \u043E\u043D \u043D\u0430\u0445\u043E\u0434\u0438\u0442\u0441\u044F
+      \u0432 \u044F\u043D\u0442\u0430\u0440\u043D\u043E\u043C \u0441\u0443\u043D\u0434\u0443\u043A\u0435
+      \u043E\u0442 \u043A\u043E\u0442\u043E\u0440\u043E\u0433\u043E \u0435\u0449\u0435
+      \u043D\u0443\u0436\u0435\u043D \u043A\u043B\u044E\u0447 "
+  - isPlayerTalking: 1
+    sentence: "(\u043F\u0440\u043E \u0441\u0435\u0431\u044F) \u0437\u043D\u0430\u0447\u0438\u0442
+      \u043C\u043D\u0435 \u043D\u0443\u0436\u0435\u043D \u0441\u0443\u043D\u0434\u0443\u043A
+      \u0438 \u043A\u043B\u044E\u0447 \u043E\u0442 \u043D\u0435\u0433\u043E"
+  dialogueSystem: {fileID: 0}
+--- !u!4 &1232480651
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1232480649}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.4939591, y: 12.724696, z: -0.036889702}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1232523698 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1319099141463851812, guid: 019ab1af1d7a4b742a982c009534c058,
@@ -30472,7 +30533,7 @@ MonoBehaviour:
   pressKPanel: {fileID: 2135621206}
   dialoguePanel: {fileID: 447133170}
   playerName: "\u0418\u0433\u0440\u043E\u043A"
-  playerSprite: {fileID: 0}
+  playerSprite: {fileID: 21300000, guid: ec47f75fe8aff1644ac73998f4ad31b5, type: 3}
   playerPortrait: {fileID: 65083750}
   playerNameLegacy: {fileID: 1040929999}
   playerNameTMP: {fileID: 0}
@@ -38225,3 +38286,4 @@ SceneRoots:
   - {fileID: 1570469279}
   - {fileID: 1150519413}
   - {fileID: 1627010890}
+  - {fileID: 1232480651}
