@@ -10639,12 +10639,17 @@ PrefabInstance:
     - target: {fileID: 7947911505737750455, guid: d730038d263986f4dac93230e1dd62b0,
         type: 3}
       propertyPath: m_Layer
-      value: 22
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7947911505737750455, guid: d730038d263986f4dac93230e1dd62b0,
+        type: 3}
+      propertyPath: m_TagString
+      value: NPC
       objectReference: {fileID: 0}
     - target: {fileID: 7947911505844789836, guid: d730038d263986f4dac93230e1dd62b0,
         type: 3}
       propertyPath: m_Layer
-      value: 22
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7947911505844789838, guid: d730038d263986f4dac93230e1dd62b0,
         type: 3}
@@ -30425,8 +30430,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f826cc0469fc934ea3ba666bdcef4bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerName: "\u0418\u0433\u0440\u043E\u043A"
-  playerSprite: {fileID: 0}
   npcName: NPC
   npcSprite: {fileID: 1340520334056430253, guid: 1c4e884194edd0d4eb62a942fb8e69dc,
     type: 3}
@@ -30468,6 +30471,8 @@ MonoBehaviour:
       \u0436\u0430\u043B\u0435\u0439"
   pressKPanel: {fileID: 2135621206}
   dialoguePanel: {fileID: 447133170}
+  playerName: "\u0418\u0433\u0440\u043E\u043A"
+  playerSprite: {fileID: 0}
   playerPortrait: {fileID: 65083750}
   playerNameLegacy: {fileID: 1040929999}
   playerNameTMP: {fileID: 0}
@@ -30477,6 +30482,7 @@ MonoBehaviour:
   dialogueLegacy: {fileID: 950935713}
   dialogueTMP: {fileID: 0}
   nextButton: {fileID: 372471635}
+  typingSpeed: 0.03
 --- !u!61 &1570469277
 BoxCollider2D:
   m_ObjectHideFlags: 0

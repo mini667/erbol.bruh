@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
-public class DialogueSystem2D : MonoBehaviour
+public class UniversalDialogueSystem2D : MonoBehaviour
 {
     [System.Serializable]
     public class DialogueLine
@@ -12,52 +13,53 @@ public class DialogueSystem2D : MonoBehaviour
         public string sentence;
     }
 
-    [Header("Dialogue Data")]
-    public string playerName = "Игрок";
-    public Sprite playerSprite;
+    [Header("NPC Настройки")]
     public string npcName = "NPC";
     public Sprite npcSprite;
     public DialogueLine[] dialogueLines;
 
-    [Header("UI Elements")]
-    public GameObject pressKPanel;   // Панель "Нажми K чтобы начать"
+    [Header("Ссылки на UI (одни для всех NPC)")]
+    public GameObject pressKPanel;   // "Нажми K чтобы начать"
     public GameObject dialoguePanel; // Панель диалога
 
-    [Header("Player Side (Left)")]
+    [Header("Игрок (слева)")]
+    public string playerName = "Игрок";
+    public Sprite playerSprite;
     public Image playerPortrait;
     public Text playerNameLegacy;
     public TMP_Text playerNameTMP;
 
-    [Header("NPC Side (Right)")]
+    [Header("NPC (справа)")]
     public Image npcPortrait;
     public Text npcNameLegacy;
     public TMP_Text npcNameTMP;
 
-    [Header("Main Dialogue")]
+    [Header("Текст диалога")]
     public Text dialogueLegacy;
     public TMP_Text dialogueTMP;
     public Button nextButton;
 
+    [Header("Настройки эффекта")]
+    public float typingSpeed = 0.03f;
+
     private int currentLine = 0;
     private bool playerInRange = false;
     private bool dialogueActive = false;
+    private bool isTyping = false;
+    private Coroutine typingCoroutine;
 
     void Start()
     {
-        // Скрываем панели
+        // Скрываем UI в начале
         pressKPanel?.SetActive(false);
         dialoguePanel?.SetActive(false);
 
-        // Настраиваем кнопки
-        if (nextButton != null) nextButton.onClick.AddListener(NextLine);
+        if (nextButton != null)
+            nextButton.onClick.AddListener(NextLine);
 
-        // Настраиваем имена
+        // Настраиваем игрока
         SetText(playerNameLegacy, playerNameTMP, playerName);
-        SetText(npcNameLegacy, npcNameTMP, npcName);
-
-        // Настраиваем портреты
         if (playerPortrait) playerPortrait.sprite = playerSprite;
-        if (npcPortrait) npcPortrait.sprite = npcSprite;
     }
 
     void Update()
@@ -68,11 +70,17 @@ public class DialogueSystem2D : MonoBehaviour
         }
     }
 
+    // ==== Основная логика ====
     void StartDialogue()
     {
         dialogueActive = true;
         pressKPanel?.SetActive(false);
         dialoguePanel?.SetActive(true);
+
+        // Настраиваем NPC
+        SetText(npcNameLegacy, npcNameTMP, npcName);
+        if (npcPortrait) npcPortrait.sprite = npcSprite;
+
         currentLine = 0;
         ShowLine();
     }
@@ -82,17 +90,19 @@ public class DialogueSystem2D : MonoBehaviour
         if (currentLine < dialogueLines.Length)
         {
             DialogueLine line = dialogueLines[currentLine];
-            SetText(dialogueLegacy, dialogueTMP, line.sentence);
+
+            if (typingCoroutine != null)
+                StopCoroutine(typingCoroutine);
+
+            typingCoroutine = StartCoroutine(TypeText(line.sentence));
 
             if (line.isPlayerTalking)
             {
-                // Игрок говорит
                 SetAlpha(playerPortrait, 1f);
                 SetAlpha(npcPortrait, 0.3f);
             }
             else
             {
-                // NPC говорит
                 SetAlpha(playerPortrait, 0.3f);
                 SetAlpha(npcPortrait, 1f);
             }
@@ -103,8 +113,41 @@ public class DialogueSystem2D : MonoBehaviour
         }
     }
 
+    IEnumerator TypeText(string sentence)
+    {
+        isTyping = true;
+        nextButton.interactable = false;
+
+        SetText(dialogueLegacy, dialogueTMP, "");
+
+        for (int i = 0; i < sentence.Length; i++)
+        {
+            if (dialogueLegacy)
+                dialogueLegacy.text += sentence[i];
+            if (dialogueTMP)
+                dialogueTMP.text += sentence[i];
+
+            yield return new WaitForSeconds(typingSpeed);
+        }
+
+        isTyping = false;
+        nextButton.interactable = true;
+    }
+
     public void NextLine()
     {
+        if (isTyping)
+        {
+            if (typingCoroutine != null)
+                StopCoroutine(typingCoroutine);
+
+            DialogueLine line = dialogueLines[currentLine];
+            SetText(dialogueLegacy, dialogueTMP, line.sentence);
+            isTyping = false;
+            nextButton.interactable = true;
+            return;
+        }
+
         currentLine++;
         ShowLine();
     }
@@ -115,17 +158,18 @@ public class DialogueSystem2D : MonoBehaviour
         dialogueActive = false;
     }
 
-    // ===== 2D триггеры =====
-    private void OnTriggerEnter2D(Collider2D other)
+    // ==== Триггеры ====
+    public void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
             playerInRange = true;
-            if (!dialogueActive) pressKPanel?.SetActive(true);
+            if (!dialogueActive)
+                pressKPanel?.SetActive(true);
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    public void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
@@ -134,7 +178,7 @@ public class DialogueSystem2D : MonoBehaviour
         }
     }
 
-    // ===== Вспомогательные методы =====
+    // ==== Вспомогательные ====
     void SetText(Text legacy, TMP_Text tmp, string text)
     {
         if (legacy) legacy.text = text;
