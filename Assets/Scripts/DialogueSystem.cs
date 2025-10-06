@@ -3,84 +3,74 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 
-public class UniversalDialogueSystem2D : MonoBehaviour
+public class DialogueSystem2D : MonoBehaviour
 {
     [System.Serializable]
     public class DialogueLine
     {
-        public bool isPlayerTalking; // true = игрок, false = NPC
+        public bool isPlayerTalking;
         [TextArea(2, 5)]
         public string sentence;
     }
 
-    [Header("NPC Настройки")]
+    [Header("Dialogue Data")]
+    public string playerName = "Игрок";
+    public Sprite playerSprite;
     public string npcName = "NPC";
     public Sprite npcSprite;
     public DialogueLine[] dialogueLines;
 
-    [Header("Ссылки на UI (одни для всех NPC)")]
-    public GameObject pressKPanel;   // "Нажми K чтобы начать"
-    public GameObject dialoguePanel; // Панель диалога
+    [Header("UI Elements")]
+    public GameObject pressEPanel;
+    public GameObject dialoguePanel;
 
-    [Header("Игрок (слева)")]
-    public string playerName = "Игрок";
-    public Sprite playerSprite;
+    [Header("Player Side (Left)")]
     public Image playerPortrait;
     public Text playerNameLegacy;
     public TMP_Text playerNameTMP;
 
-    [Header("NPC (справа)")]
+    [Header("NPC Side (Right)")]
     public Image npcPortrait;
     public Text npcNameLegacy;
     public TMP_Text npcNameTMP;
 
-    [Header("Текст диалога")]
+    [Header("Main Dialogue")]
     public Text dialogueLegacy;
     public TMP_Text dialogueTMP;
     public Button nextButton;
 
-    [Header("Настройки эффекта")]
-    public float typingSpeed = 0.03f;
-
     private int currentLine = 0;
-    private bool playerInRange = false;
     private bool dialogueActive = false;
-    private bool isTyping = false;
     private Coroutine typingCoroutine;
+
+    public System.Action onDialogueEnd; // Это событие мы используем для связи со скриптом триггера
 
     void Start()
     {
-        // Скрываем UI в начале
-        pressKPanel?.SetActive(false);
+        pressEPanel?.SetActive(false);
         dialoguePanel?.SetActive(false);
 
-        if (nextButton != null)
-            nextButton.onClick.AddListener(NextLine);
+        if (nextButton != null) nextButton.onClick.AddListener(NextLine);
 
-        // Настраиваем игрока
         SetText(playerNameLegacy, playerNameTMP, playerName);
+        // Имя NPC и спрайт теперь устанавливаются триггером, так что эту строку можно убрать или оставить для значения по умолчанию
+        // SetText(npcNameLegacy, npcNameTMP, npcName);
+
         if (playerPortrait) playerPortrait.sprite = playerSprite;
+        // if (npcPortrait) npcPortrait.sprite = npcSprite;
     }
 
-    void Update()
-    {
-        if (playerInRange && !dialogueActive && Input.GetKeyDown(KeyCode.K))
-        {
-            StartDialogue();
-        }
-    }
+    // <<< УДАЛЕНО: Метод Update, так как запуск диалога теперь происходит только из NPCDialogueTrigger
 
-    // ==== Основная логика ====
     public void StartDialogue()
     {
-        dialogueActive = true;
-        pressKPanel?.SetActive(false);
-        dialoguePanel?.SetActive(true);
-
-        // Настраиваем NPC
+        // Обновляем UI с данными от NPC
         SetText(npcNameLegacy, npcNameTMP, npcName);
         if (npcPortrait) npcPortrait.sprite = npcSprite;
 
+        dialogueActive = true;
+        pressEPanel?.SetActive(false);
+        dialoguePanel?.SetActive(true);
         currentLine = 0;
         ShowLine();
     }
@@ -90,11 +80,6 @@ public class UniversalDialogueSystem2D : MonoBehaviour
         if (currentLine < dialogueLines.Length)
         {
             DialogueLine line = dialogueLines[currentLine];
-
-            if (typingCoroutine != null)
-                StopCoroutine(typingCoroutine);
-
-            typingCoroutine = StartCoroutine(TypeText(line.sentence));
 
             if (line.isPlayerTalking)
             {
@@ -106,6 +91,11 @@ public class UniversalDialogueSystem2D : MonoBehaviour
                 SetAlpha(playerPortrait, 0.3f);
                 SetAlpha(npcPortrait, 1f);
             }
+
+            if (typingCoroutine != null)
+                StopCoroutine(typingCoroutine);
+
+            typingCoroutine = StartCoroutine(TypeText(line.sentence));
         }
         else
         {
@@ -115,39 +105,19 @@ public class UniversalDialogueSystem2D : MonoBehaviour
 
     IEnumerator TypeText(string sentence)
     {
-        isTyping = true;
-        nextButton.interactable = false;
-
         SetText(dialogueLegacy, dialogueTMP, "");
+        string currentText = "";
 
-        for (int i = 0; i < sentence.Length; i++)
+        foreach (char letter in sentence.ToCharArray())
         {
-            if (dialogueLegacy)
-                dialogueLegacy.text += sentence[i];
-            if (dialogueTMP)
-                dialogueTMP.text += sentence[i];
-
-            yield return new WaitForSeconds(typingSpeed);
+            currentText += letter;
+            SetText(dialogueLegacy, dialogueTMP, currentText);
+            yield return new WaitForSeconds(0.03f);
         }
-
-        isTyping = false;
-        nextButton.interactable = true;
     }
 
     public void NextLine()
     {
-        if (isTyping)
-        {
-            if (typingCoroutine != null)
-                StopCoroutine(typingCoroutine);
-
-            DialogueLine line = dialogueLines[currentLine];
-            SetText(dialogueLegacy, dialogueTMP, line.sentence);
-            isTyping = false;
-            nextButton.interactable = true;
-            return;
-        }
-
         currentLine++;
         ShowLine();
     }
@@ -156,29 +126,11 @@ public class UniversalDialogueSystem2D : MonoBehaviour
     {
         dialoguePanel?.SetActive(false);
         dialogueActive = false;
+        onDialogueEnd?.Invoke(); // <<< ВАЖНО: Эта строка вызывает метод в первом скрипте
     }
 
-    // ==== Триггеры ====
-    public void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            playerInRange = true;
-            if (!dialogueActive)
-                pressKPanel?.SetActive(true);
-        }
-    }
+    // <<< УДАЛЕНЫ: Методы OnTriggerEnter2D и OnTriggerExit2D, чтобы избежать дублирования логики
 
-    public void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            playerInRange = false;
-            pressKPanel?.SetActive(false);
-        }
-    }
-
-    // ==== Вспомогательные ====
     void SetText(Text legacy, TMP_Text tmp, string text)
     {
         if (legacy) legacy.text = text;
