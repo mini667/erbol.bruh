@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class   : MonoBehaviour
+public class  NPCDialogueTrigger : MonoBehaviour
 {
     [System.Serializable]
-    public class DialogueLine
+    public class DialogueLine : MonoBehaviour
     {
         public bool isPlayerTalking;
         [TextArea(2, 5)]
